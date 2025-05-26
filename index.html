@@ -40,49 +40,39 @@
     </form>
   </div>
 
- <script>
+<script>
   const form = document.getElementById('yogaForm');
   const dateInput = document.getElementById('date');
 
-  // Установить минимальную дату = сегодня
   const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  dateInput.min = `${yyyy}-${mm}-${dd}`;
+  dateInput.min = today.toISOString().split("T")[0];
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
     const selectedDate = new Date(form.date.value);
-    const isSunday = selectedDate.getDay() === 0;
-
-    if (!isSunday) {
+    if (selectedDate.getDay() !== 0) {
       alert("Пожалуйста, выберите воскресенье.");
       return;
     }
 
-    const data = {
-      name: form.name.value,
-      format: form.format.value,
-      date: form.date.value,
-      contact: form.contact.value
-    };
+    const formData = new FormData();
+    formData.append("name", form.name.value);
+    formData.append("format", form.format.value);
+    formData.append("date", form.date.value);
+    formData.append("contact", form.contact.value);
 
     fetch("https://script.google.com/macros/s/AKfycbxQsFPNl4qWgl9kQhdtzQP_Jl8PEBLzFYdCddCNg3WmCJ8ch8mQ_Jm8s3Lp0yMfQS9Q/exec", {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+      method: "POST",
+      mode: "no-cors",
+      body: formData
     });
 
-    // Всегда показываем успех (нет доступа к ответу)
     alert("Вы успешно записались!");
     form.reset();
   });
 </script>
+
 
 </body>
 </html>
